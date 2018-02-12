@@ -3,6 +3,9 @@
 This library helps to connect processing and the Ableton Push 2 device.
 
 ### Milestones
-0. Implement frame sharing with Push device
+1. Implement frame sharing with Push device
 0. Implement MIDI handling with Push device
 0. Implement sysex messages for special controls
+
+### Libraries
+The library is based on the [Wayang](https://github.com/brunchboy/wayang) project.
