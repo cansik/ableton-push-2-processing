@@ -43,6 +43,8 @@ public class PushDevice implements PConstants {
             return;
 
         Wayang.close();
+
+        System.out.println("closed push 2 device");
     }
 
     public void stop()
