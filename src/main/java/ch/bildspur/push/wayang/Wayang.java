@@ -75,33 +75,17 @@ public class Wayang {
 
     private static boolean isLibUsbInitialised = false;
 
+    public static final PushCallback pushEvents = new PushCallback();
+
+    public static final int VENDOR_ID = 0x2982;
+    public static final int PRODUCT_ID = 0x1967;
+
     /**
      * Close the Push 2 interface if it is open, and shut down our LibUsb context if it is active.
      */
     public static synchronized void close() {
-
-        // Shut down the asynchronous event processing thread if it was started.
-        if (eventThread != null) {
-            eventThread.abort();
-            try {
-                eventThread.join();
-            } catch (InterruptedException e) {
-                System.err.println("Interrupted waiting for event handling thread to abort.");
-            }
-            eventThread = null;
-        }
-
-        if (pushHandle != null) {
-            displayImage = null;
-
-            LibUsb.close(pushHandle);
-            pushHandle = null;
-        }
-        if (transferBuffer != null) {
-            LibUsb.exit(context);
-            headerBuffer = null;
-            transferBuffer = null;
-        }
+        stopEventThread();
+        exitLibUsb();
     }
 
     /**
@@ -111,7 +95,7 @@ public class Wayang {
      *
      * @throws LibUsbException if there is a problem communicating with the USB environment.
      */
-    private static DeviceHandle findPush() {
+    private static Device findPush() {
         // Read the USB device list
         DeviceList list = new DeviceList();
         int result = LibUsb.getDeviceList(null, list);
@@ -128,13 +112,9 @@ public class Wayang {
                     throw new LibUsbException("Unable to read device descriptor", result);
                 }
                 if (descriptor.bDeviceClass() == LibUsb.CLASS_PER_INTERFACE &&
-                        descriptor.idVendor() == 0x2982 && descriptor.idProduct() == 0x1967) {
+                        descriptor.idVendor() == VENDOR_ID && descriptor.idProduct() == PRODUCT_ID) {
 
-                    DeviceHandle handle = new DeviceHandle();
-                    result = LibUsb.open(device, handle);
-                    if (result == LibUsb.SUCCESS) {
-                        return handle;
-                    }  // Just ignore failures; Windows has spurious, non-working entries which match but fail to open
+                    return device;
                 }
             }
         } finally {
@@ -176,6 +156,11 @@ public class Wayang {
      */
     private static boolean shutdownHookInstalled = false;
 
+    public static synchronized BufferedImage open()
+    {
+        return open(findPush());
+    }
+
     /**
      * Set up a connection to libusb, find the Push 2, and open its display interface.
      * If the display is already open, simply returns the existing buffered image.
@@ -186,7 +171,7 @@ public class Wayang {
      * @throws LibUsbException       if there is a problem communicating with the USB environment.
      * @throws IllegalStateException if no Push 2 can be found.
      */
-    public static synchronized BufferedImage open() {
+    public static synchronized BufferedImage open(Device device) {
 
         // Set up hook to close gracefully at shutdown, if we have not already done so.
         if (!shutdownHookInstalled) {
@@ -207,10 +192,13 @@ public class Wayang {
             headerBuffer.put(frameHeader);
 
             try {
-                DeviceHandle handle = findPush();
-                if (handle != null) {
+                // open device
+                DeviceHandle handle = new DeviceHandle();
+                int result = LibUsb.open(device, handle);
+                if (result == LibUsb.SUCCESS) {
                     openPushDisplay(handle);
-                } else {
+                }
+                else {
                     throw new IllegalStateException("Unable to find Ableton Push 2 display device");
                 }
             } catch (RuntimeException e) {
@@ -222,7 +210,7 @@ public class Wayang {
         return displayImage;
     }
 
-    private static void initLibUsb()
+    public static void initLibUsb()
     {
         if(isLibUsbInitialised)
             return;
@@ -233,7 +221,43 @@ public class Wayang {
             throw new LibUsbException("Unable to initialize libusb", result);
         }
 
+        // setup hotplug
+        HotplugCallbackHandle callbackHandle = new HotplugCallbackHandle();
+        result = LibUsb.hotplugRegisterCallback(null,
+                LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED
+                        | LibUsb.HOTPLUG_EVENT_DEVICE_LEFT,
+                LibUsb.HOTPLUG_ENUMERATE,
+                LibUsb.HOTPLUG_MATCH_ANY,
+                LibUsb.HOTPLUG_MATCH_ANY,
+                LibUsb.HOTPLUG_MATCH_ANY,
+                pushEvents, null, callbackHandle);
+        if (result != LibUsb.SUCCESS)
+        {
+            throw new LibUsbException("Unable to register hotplug callback",
+                    result);
+        }
+
         isLibUsbInitialised = true;
+    }
+
+    public static void exitLibUsb()
+    {
+        if(!isLibUsbInitialised)
+            return;
+
+        if (pushHandle != null) {
+            displayImage = null;
+
+            LibUsb.close(pushHandle);
+            pushHandle = null;
+        }
+        if (transferBuffer != null) {
+            LibUsb.exit(context);
+            headerBuffer = null;
+            transferBuffer = null;
+        }
+
+        isLibUsbInitialised = false;
     }
 
     /**
@@ -300,17 +324,30 @@ public class Wayang {
     /**
      * Start the thread to process asynchronous events from LibUsb if it is not already running.
      */
-    private static synchronized void startEventThread() {
+    public static synchronized void startEventThread() {
         if (eventThread == null) {
             eventThread = new EventHandlingThread(context);
+            eventThread.setDaemon(true);
             eventThread.start();
+        }
+    }
+
+    public static synchronized void stopEventThread() {
+        // Shut down the asynchronous event processing thread if it was started.
+        if (eventThread != null) {
+            eventThread.abort();
+            try {
+                eventThread.join();
+            } catch (InterruptedException e) {
+                System.err.println("Interrupted waiting for event handling thread to abort.");
+            }
+            eventThread = null;
         }
     }
 
     public static boolean isPushAvailable()
     {
         initLibUsb();
-
         return findPush() != null;
     }
 

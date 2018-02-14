@@ -1,12 +1,14 @@
 package ch.bildspur.push;
 
+import ch.bildspur.push.wayang.PushEventListener;
 import ch.bildspur.push.wayang.Wayang;
+import org.usb4java.Device;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 import java.awt.image.BufferedImage;
 
-public class PushDevice implements PConstants {
+public class PushDevice implements PConstants, PushEventListener {
 
     private PApplet parent;
     private BufferedImage screenBuffer;
@@ -17,7 +19,12 @@ public class PushDevice implements PConstants {
     {
         this.parent = parent;
 
+        // add event listeners
+        Wayang.pushEvents.addListener(this);
         parent.registerMethod("stop", this);
+
+        Wayang.initLibUsb();
+        Wayang.startEventThread();
     }
 
     public boolean open()
@@ -43,12 +50,23 @@ public class PushDevice implements PConstants {
             return;
 
         Wayang.close();
-
         System.out.println("closed push 2 device");
     }
 
     public void stop()
     {
         close();
+        Wayang.stopEventThread();
+        Wayang.exitLibUsb();
+    }
+
+    @Override
+    public void onPushConnected(Device device) {
+        System.out.println("push connected!");
+    }
+
+    @Override
+    public void onPushDisconnected(Device device) {
+        System.out.println("push disconnected!");
     }
 }
