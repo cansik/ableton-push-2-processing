@@ -16,7 +16,7 @@ public class BasicSketch extends PApplet {
         runSketch();
     }
 
-    PushContext pushContext = new PushContext(this);
+    PushContext pushContext = new PushContext();
     PushDevice push;
     Graphics pushGraphics;
 

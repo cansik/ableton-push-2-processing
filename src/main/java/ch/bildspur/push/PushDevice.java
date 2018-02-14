@@ -28,15 +28,13 @@ public class PushDevice implements PConstants, PushConstants {
      */
     private DeviceHandle pushHandle = null;
 
-    private PApplet parent;
     private BufferedImage screenBuffer;
 
     private boolean isOpen = false;
 
     private Device device;
 
-    public PushDevice(PApplet parent, Device device) {
-        this.parent = parent;
+    public PushDevice(Device device) {
         this.device = device;
     }
 

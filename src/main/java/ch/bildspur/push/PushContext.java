@@ -8,39 +8,22 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PushContext implements PushConstants, PConstants, PushEventListener {
+public class PushContext implements PushConstants, PConstants {
     private final Context context = new Context();
 
     private EventHandlingThread eventThread = null;
 
     private boolean isLibUsbInitialised = false;
 
-    private final PushEvent pushEvent = new PushEvent();
+    protected final PushEvent pushEvent = new PushEvent();
 
-    private PApplet parent;
-
-    private Method onConnectedMethod;
-
-    private Method onDisconnectedMethod;
-
-    public PushContext(PApplet parent) {
-        this.parent = parent;
-
+    public PushContext() {
         // add event listeners
-        pushEvent.addListener(this);
-        parent.registerMethod("dispose", this);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 close();
             }
         });
-
-        // register processing events
-        try {
-            onConnectedMethod = parent.getClass().getMethod("onPushConnected", PushDevice.class);
-            onDisconnectedMethod = parent.getClass().getMethod("onPushDisconnected", PushDevice.class);
-        } catch (Exception e) {
-        }
     }
 
     private void initLibUsb() {
@@ -135,7 +118,7 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
                 if (descriptor.bDeviceClass() == LibUsb.CLASS_PER_INTERFACE &&
                         descriptor.idVendor() == VENDOR_ID && descriptor.idProduct() == PRODUCT_ID) {
 
-                    devices.add(new PushDevice(parent, device));
+                    devices.add(new PushDevice(device));
                 }
             }
         } finally {
@@ -179,28 +162,6 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
 
     public void addPushEventListener(PushEventListener listener) {
         pushEvent.addListener(listener);
-    }
-
-    @Override
-    public void onPushConnected(Device device) {
-        if (onConnectedMethod != null) {
-            try {
-                onConnectedMethod.invoke(parent, new PushDevice(parent, device));
-            } catch (Exception e) {
-                onConnectedMethod = null;
-            }
-        }
-    }
-
-    @Override
-    public void onPushDisconnected(Device device) {
-        if (onDisconnectedMethod != null) {
-            try {
-                onDisconnectedMethod.invoke(parent, new PushDevice(parent, device));
-            } catch (Exception e) {
-                onDisconnectedMethod = null;
-            }
-        }
     }
 
     public boolean isOpen() {
