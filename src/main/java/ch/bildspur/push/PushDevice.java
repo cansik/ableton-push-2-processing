@@ -35,15 +35,13 @@ public class PushDevice implements PConstants, PushConstants {
 
     private Device device;
 
-    public PushDevice(PApplet parent, Device device)
-    {
+    public PushDevice(PApplet parent, Device device) {
         this.parent = parent;
         this.device = device;
     }
 
-    public boolean open()
-    {
-        if(isOpen)
+    public boolean open() {
+        if (isOpen)
             return true;
 
         // Things look promising so allocate our byte buffers
@@ -57,8 +55,7 @@ public class PushDevice implements PConstants, PushConstants {
             int result = LibUsb.open(device, handle);
             if (result == LibUsb.SUCCESS) {
                 openPushDisplay(handle);
-            }
-            else {
+            } else {
                 throw new IllegalStateException("Unable to find Ableton Push 2 display device");
             }
         } catch (RuntimeException e) {
@@ -70,9 +67,8 @@ public class PushDevice implements PConstants, PushConstants {
         return true;
     }
 
-    public void close()
-    {
-        if(!isOpen)
+    public void close() {
+        if (!isOpen)
             return;
 
         if (pushHandle != null) {
@@ -191,13 +187,13 @@ public class PushDevice implements PConstants, PushConstants {
      */
     private void maskPixels(short[] pixels, byte[] destination) {
         for (int y = 0; y < LINES_PER_TRANSFER; y++) {
-            for (int x = 0; x < DISPLAY_WIDTH; x+= 2) {
+            for (int x = 0; x < DISPLAY_WIDTH; x += 2) {
                 int pixelOffset = (y * DISPLAY_WIDTH) + x;
                 int destinationOffset = (y * BYTES_PER_LINE) + (x * 2);
-                destination[destinationOffset] = (byte)((pixels[pixelOffset] & 0xff) ^ 0xe7);
-                destination[destinationOffset + 1] = (byte)((pixels[pixelOffset] >>> 8) ^ 0xf3);
-                destination[destinationOffset + 2] = (byte)((pixels[pixelOffset + 1] &0xff) ^ 0xe7);
-                destination[destinationOffset + 3] = (byte)((pixels[pixelOffset + 1] >>> 8) ^ 0xff);
+                destination[destinationOffset] = (byte) ((pixels[pixelOffset] & 0xff) ^ 0xe7);
+                destination[destinationOffset + 1] = (byte) ((pixels[pixelOffset] >>> 8) ^ 0xf3);
+                destination[destinationOffset + 2] = (byte) ((pixels[pixelOffset + 1] & 0xff) ^ 0xe7);
+                destination[destinationOffset + 3] = (byte) ((pixels[pixelOffset + 1] >>> 8) ^ 0xff);
             }
         }
     }
@@ -206,7 +202,6 @@ public class PushDevice implements PConstants, PushConstants {
      * Opens the Push 2 display interface when the device has been found and opened.
      *
      * @param handle the opened Push 2 device.
-     *
      * @throws LibUsbException if there is a problem communicating with the USB environment.
      */
     private void openPushDisplay(DeviceHandle handle) {
@@ -220,7 +215,7 @@ public class PushDevice implements PConstants, PushConstants {
         // Create the buffered image which we can draw to, and which will convert that into pixel data
         // in the arrangement the Push wants.
         ColorModel colorModel = new DirectColorModel(16, 0x001f, 0x07e0, 0xf800);
-        int[] bandMasks = new int[] {0x001f, 0x07e0, 0xf800};
+        int[] bandMasks = new int[]{0x001f, 0x07e0, 0xf800};
         WritableRaster raster = WritableRaster.createPackedRaster(DataBuffer.TYPE_USHORT,
                 DISPLAY_WIDTH, DISPLAY_HEIGHT, bandMasks, null);
         screenBuffer = new BufferedImage(colorModel, raster, false, null);

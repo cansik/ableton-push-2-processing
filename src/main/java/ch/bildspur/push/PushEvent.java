@@ -9,20 +9,17 @@ public class PushEvent implements HotplugCallback, PushConstants {
 
     private List<PushEventListener> pushEventListeners = new ArrayList<>();
 
-    public void addListener(PushEventListener listener)
-    {
+    public void addListener(PushEventListener listener) {
         pushEventListeners.add(listener);
     }
 
-    private void invokeConnected(Device device)
-    {
-        for(PushEventListener listener : pushEventListeners)
+    private void invokeConnected(Device device) {
+        for (PushEventListener listener : pushEventListeners)
             listener.onPushConnected(device);
     }
 
-    private void invokeDisconnected(Device device)
-    {
-        for(PushEventListener listener : pushEventListeners)
+    private void invokeDisconnected(Device device) {
+        for (PushEventListener listener : pushEventListeners)
             listener.onPushDisconnected(device);
     }
 
@@ -38,7 +35,7 @@ public class PushEvent implements HotplugCallback, PushConstants {
                 && descriptor.idVendor() == VENDOR_ID
                 && descriptor.idProduct() == PRODUCT_ID) {
 
-            if(event == LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED)
+            if (event == LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED)
                 invokeConnected(device);
             else
                 invokeDisconnected(device);

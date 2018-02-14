@@ -30,10 +30,10 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
         pushEvent.addListener(this);
         parent.registerMethod("dispose", this);
         Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    close();
-                }
-            });
+            public void run() {
+                close();
+            }
+        });
 
         // register processing events
         try {
@@ -43,9 +43,8 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
         }
     }
 
-    private void initLibUsb()
-    {
-        if(isLibUsbInitialised)
+    private void initLibUsb() {
+        if (isLibUsbInitialised)
             return;
 
         // Try initializing libusb
@@ -64,8 +63,7 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
                 LibUsb.HOTPLUG_MATCH_ANY,
                 LibUsb.HOTPLUG_MATCH_ANY,
                 pushEvent, null, callbackHandle);
-        if (result != LibUsb.SUCCESS)
-        {
+        if (result != LibUsb.SUCCESS) {
             throw new LibUsbException("Unable to register hotplug callback",
                     result);
         }
@@ -73,8 +71,7 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
         isLibUsbInitialised = true;
     }
 
-    private void exitLibUsb()
-    {
+    private void exitLibUsb() {
         checkUsbLibState();
         LibUsb.exit(context);
         isLibUsbInitialised = false;
@@ -104,17 +101,15 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
         }
     }
 
-    private void checkUsbLibState()
-    {
-        if(!isLibUsbInitialised)
-            throw new LibUsbException("LibUsb not initialised", 0);
+    private void checkUsbLibState() {
+        if (!isLibUsbInitialised)
+            throw new LibUsbException("LibUsb not initialised", 1);
     }
 
     /**
      * Locate the Push 2 in the USB environment.
      *
      * @return the device object representing it, or null if it could not be found.
-     *
      * @throws LibUsbException if there is a problem communicating with the USB environment.
      */
     public List<PushDevice> listDevices() {
@@ -151,8 +146,7 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
         return devices;
     }
 
-    public PushDevice getFirstDevice()
-    {
+    public PushDevice getFirstDevice() {
         checkUsbLibState();
         List<PushDevice> devices = listDevices();
 
@@ -161,33 +155,29 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
 
     /**
      * Checks if a push device is available.
+     *
      * @return true if push is available.
      */
-    public boolean isPushAvailable()
-    {
+    public boolean isPushAvailable() {
         checkUsbLibState();
         return listDevices().size() > 0;
     }
 
-    public void open()
-    {
+    public void open() {
         initLibUsb();
         startEventThread();
     }
 
-    public void close()
-    {
+    public void close() {
         stopEventThread();
         exitLibUsb();
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         close();
     }
 
-    public void addPushEventListener(PushEventListener listener)
-    {
+    public void addPushEventListener(PushEventListener listener) {
         pushEvent.addListener(listener);
     }
 

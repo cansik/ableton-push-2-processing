@@ -1,5 +1,6 @@
 package ch.bildspur.push;
 
+import javafx.application.Platform;
 import processing.core.PApplet;
 
 public class BasicSketch extends PApplet {
@@ -14,6 +15,7 @@ public class BasicSketch extends PApplet {
     }
 
     PushContext pushContext = new PushContext(this);
+    PushDevice push;
 
     @Override
     public void settings()
@@ -25,11 +27,26 @@ public class BasicSketch extends PApplet {
     public void setup()
     {
         pushContext.open();
-        System.out.println("Push available: " + pushContext.isPushAvailable());
+
+        if(!pushContext.isPushAvailable())
+        {
+            Platform.exit();
+        }
+
+        System.out.println("Push available!");
+        push = pushContext.getFirstDevice();
+        push.open();
     }
 
     @Override
     public void draw() {
         background(100, 200, 50);
+
+        push.sendFrameAsync();
+    }
+
+    @Override
+    public void stop() {
+        push.close();
     }
 }
