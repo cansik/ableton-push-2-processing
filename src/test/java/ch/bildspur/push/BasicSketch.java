@@ -1,5 +1,6 @@
 package ch.bildspur.push;
 
+import ch.bildspur.push.buffer.BufferedImageBuffer;
 import javafx.application.Platform;
 import processing.core.PApplet;
 
@@ -18,6 +19,8 @@ public class BasicSketch extends PApplet {
 
     PushContext pushContext = new PushContext();
     PushDevice push;
+    BufferedImageBuffer screenBuffer;
+
     Graphics pushGraphics;
 
     @Override
@@ -37,10 +40,11 @@ public class BasicSketch extends PApplet {
         }
 
         System.out.println("Push available!");
+        screenBuffer = new BufferedImageBuffer();
         push = pushContext.getFirstDevice();
-        push.open();
+        push.open(screenBuffer);
 
-        pushGraphics = push.getScreenBuffer().getGraphics();
+        pushGraphics = screenBuffer.getScreen().createGraphics();
     }
 
     @Override
