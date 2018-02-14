@@ -15,6 +15,7 @@ public class ProcessingPushDevice extends PushDevice {
         super(device);
 
         this.parent = parent;
+        this.graphicsBuffer = new PGraphicsBuffer(parent);
     }
 
     public ProcessingPushDevice(PApplet parent, PushDevice device)
