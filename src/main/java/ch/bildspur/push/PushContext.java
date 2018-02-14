@@ -202,4 +202,8 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
             }
         }
     }
+
+    public boolean isOpen() {
+        return isLibUsbInitialised;
+    }
 }

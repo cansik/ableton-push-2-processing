@@ -220,4 +220,16 @@ public class PushDevice implements PConstants, PushConstants {
                 DISPLAY_WIDTH, DISPLAY_HEIGHT, bandMasks, null);
         screenBuffer = new BufferedImage(colorModel, raster, false, null);
     }
+
+    public BufferedImage getScreenBuffer() {
+        return screenBuffer;
+    }
+
+    public void setScreenBuffer(BufferedImage screenBuffer) {
+        this.screenBuffer = screenBuffer;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
 }
