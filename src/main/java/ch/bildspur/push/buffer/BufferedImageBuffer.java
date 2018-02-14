@@ -23,6 +23,11 @@ public class BufferedImageBuffer implements PushImageBuffer, PushConstants {
     }
 
     @Override
+    public void prepareChunk() {
+
+    }
+
+    @Override
     public byte[] getChunk(int index) {
         screen.getRaster().getDataElements(0, index * LINES_PER_TRANSFER, DISPLAY_WIDTH, LINES_PER_TRANSFER, pixels);
         maskPixels(pixels, maskedChunk);

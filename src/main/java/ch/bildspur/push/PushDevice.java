@@ -103,6 +103,7 @@ public class PushDevice implements PConstants, PushConstants {
             throw new LibUsbException("Transfer of frame header to Push 2 display failed", result);
         }
 
+        screenBuffer.prepareChunk();
         for (int i = 0; i < (DISPLAY_HEIGHT / LINES_PER_TRANSFER); i++) {
             transferBuffer.clear();
             transferBuffer.put(screenBuffer.getChunk(i));
@@ -136,6 +137,7 @@ public class PushDevice implements PConstants, PushConstants {
             throw new LibUsbException("Asynchronous transfer of frame header to Push 2 display failed", result);
         }
 
+        screenBuffer.prepareChunk();
         for (int i = 0; i < (DISPLAY_HEIGHT / LINES_PER_TRANSFER); i++) {
             transferBuffer.clear();
             transferBuffer.put(screenBuffer.getChunk(i));
