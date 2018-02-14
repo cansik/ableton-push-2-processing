@@ -12,7 +12,6 @@ import java.util.Arrays;
 public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
     private PGraphics graphics;
     private PApplet parent;
-    private int[] chunk = new int[DISPLAY_WIDTH * DISPLAY_HEIGHT];
     private byte[] maskedChunk = new byte[LINES_PER_TRANSFER * BYTES_PER_LINE];
 
     public PGraphicsBuffer(PApplet parent)
@@ -22,27 +21,18 @@ public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
 
     @Override
     public void init() {
-        graphics = parent.createGraphics(DISPLAY_WIDTH, DISPLAY_HEIGHT, PConstants.JAVA2D);
+        graphics = parent.createGraphics(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     }
 
     @Override
     public void prepareChunk() {
-        /*
-        Texture tex = ((PGraphicsOpenGL)parent.g).getTexture(graphics);
-
-        if(tex.available())
-            tex.get(chunk);
-            */
-
         graphics.loadPixels();
-        chunk = graphics.pixels;
-
-        maskPixels(chunk, maskedChunk);
+        maskPixels(graphics.pixels, maskedChunk);
     }
 
     @Override
     public byte[] getChunk(int index) {
-        return Arrays.copyOfRange(maskedChunk, 
+        return Arrays.copyOfRange(maskedChunk,
                 LINES_PER_TRANSFER * index,
                 LINES_PER_TRANSFER * (index + 1));
     }
