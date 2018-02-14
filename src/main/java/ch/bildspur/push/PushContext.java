@@ -28,8 +28,12 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
 
         // add event listeners
         pushEvent.addListener(this);
-
         parent.registerMethod("dispose", this);
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    close();
+                }
+            });
 
         // register processing events
         try {
@@ -145,6 +149,14 @@ public class PushContext implements PushConstants, PConstants, PushEventListener
         }
 
         return devices;
+    }
+
+    public PushDevice getFirstDevice()
+    {
+        checkUsbLibState();
+        List<PushDevice> devices = listDevices();
+
+        return (devices.size() > 0) ? devices.get(0) : null;
     }
 
     /**
