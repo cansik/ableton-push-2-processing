@@ -1,11 +1,11 @@
-package ch.bildspur.push.wayang;
+package ch.bildspur.push;
 
 import org.usb4java.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PushCallback implements HotplugCallback {
+public class PushEvent implements HotplugCallback, PushConstants {
 
     private List<PushEventListener> pushEventListeners = new ArrayList<>();
 
@@ -35,8 +35,8 @@ public class PushCallback implements HotplugCallback {
                     result);
 
         if (descriptor.bDeviceClass() == LibUsb.CLASS_PER_INTERFACE
-                && descriptor.idVendor() == Wayang.VENDOR_ID
-                && descriptor.idProduct() == Wayang.PRODUCT_ID) {
+                && descriptor.idVendor() == VENDOR_ID
+                && descriptor.idProduct() == PRODUCT_ID) {
 
             if(event == LibUsb.HOTPLUG_EVENT_DEVICE_ARRIVED)
                 invokeConnected(device);

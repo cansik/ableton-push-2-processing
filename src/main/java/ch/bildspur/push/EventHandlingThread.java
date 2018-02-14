@@ -1,4 +1,4 @@
-package ch.bildspur.push.wayang;
+package ch.bildspur.push;
 
 import org.usb4java.Context;
 import org.usb4java.LibUsb;

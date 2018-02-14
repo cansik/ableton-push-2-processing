@@ -13,7 +13,7 @@ public class BasicSketch extends PApplet {
         runSketch();
     }
 
-    PushDevice push = new PushDevice(this);
+    PushContext pushContext = new PushContext(this);
 
     @Override
     public void settings()
@@ -24,11 +24,8 @@ public class BasicSketch extends PApplet {
     @Override
     public void setup()
     {
-        if(!push.open())
-        {
-            println("push device could not be opened!");
-            exit();
-        }
+        pushContext.open();
+        System.out.println("Push available: " + pushContext.isPushAvailable());
     }
 
     @Override
