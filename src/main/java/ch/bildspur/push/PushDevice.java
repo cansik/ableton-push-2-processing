@@ -183,4 +183,8 @@ public class PushDevice implements PConstants, PushConstants {
     public boolean isOpen() {
         return isOpen;
     }
+
+    public Device getDevice() {
+        return device;
+    }
 }
