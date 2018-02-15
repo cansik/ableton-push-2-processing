@@ -35,6 +35,11 @@ public class BufferedImageBuffer implements PushImageBuffer, PushConstants {
         return maskedChunk;
     }
 
+    public short[] getRaw() {
+        screen.getRaster().getDataElements(0, 0, DISPLAY_WIDTH, LINES_PER_TRANSFER, pixels);
+        return pixels;
+    }
+
     @Override
     public void dispose() {
         screen = null;

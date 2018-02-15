@@ -4,8 +4,6 @@ import ch.bildspur.push.PushConstants;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import processing.opengl.PGraphicsOpenGL;
-import processing.opengl.Texture;
 
 import java.util.Arrays;
 
@@ -16,8 +14,7 @@ public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
     private PApplet parent;
     private byte[] maskedChunk = new byte[LINES_PER_TRANSFER * BYTES_PER_LINE];
 
-    public PGraphicsBuffer(PApplet parent)
-    {
+    public PGraphicsBuffer(PApplet parent) {
         this.parent = parent;
     }
 
@@ -37,6 +34,11 @@ public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
         return Arrays.copyOfRange(maskedChunk,
                 CHUNK_SIZE * index,
                 CHUNK_SIZE * (index + 1));
+    }
+
+    public int[] getRaw() {
+        graphics.loadPixels();
+        return graphics.pixels;
     }
 
     @Override

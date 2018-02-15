@@ -53,7 +53,7 @@ public class ProcessingSketch extends PApplet {
         background(100, 200, 50);
 
         pushGraphics.beginDraw();
-        pushGraphics.background(0);
+        pushGraphics.background(255, 0, 0);
         pushGraphics.text("Framecount: " + frameCount, 100, 100);
         pushGraphics.endDraw();
 
