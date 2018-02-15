@@ -76,6 +76,7 @@ public class ChunkCheckSketch extends PApplet {
         text(bufferedString, 30, 40);
         text(graphicsString, 30, 80);
 
+
         System.out.println(bufferedString.substring(0, 200));
         System.out.println(graphicsString.substring(0, 200));
 
@@ -102,8 +103,6 @@ public class ChunkCheckSketch extends PApplet {
         else {
             System.out.println("Is same!");
         }
-
-        //exit();
     }
 
     private String getByteString(byte[] data)
