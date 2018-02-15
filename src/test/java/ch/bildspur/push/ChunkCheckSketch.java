@@ -6,6 +6,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class ChunkCheckSketch extends PApplet {
     public static void main(String... args) {
@@ -75,14 +76,14 @@ public class ChunkCheckSketch extends PApplet {
         text(bufferedString, 30, 40);
         text(graphicsString, 30, 80);
 
-        System.out.println(bufferedString);
-        System.out.println(graphicsString);
+        System.out.println(bufferedString.substring(0, 200));
+        System.out.println(graphicsString.substring(0, 200));
 
-        System.out.println();
+        System.out.println("");
         System.out.println("Buffered: " + bufferedChunk.length);
         System.out.println("Graphics: " + graphicsChunk.length);
 
-        System.out.println();
+        System.out.println("");
         // compare
         boolean isDifferent = false;
         int i;
@@ -102,7 +103,7 @@ public class ChunkCheckSketch extends PApplet {
             System.out.println("Is same!");
         }
 
-        exit();
+        //exit();
     }
 
     private String getByteString(byte[] data)
