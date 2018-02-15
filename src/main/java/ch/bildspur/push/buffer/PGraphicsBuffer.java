@@ -10,6 +10,8 @@ import processing.opengl.Texture;
 import java.util.Arrays;
 
 public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
+    private static int CHUNK_SIZE = LINES_PER_TRANSFER * BYTES_PER_LINE;
+
     private PGraphics graphics;
     private PApplet parent;
     private byte[] maskedChunk = new byte[LINES_PER_TRANSFER * BYTES_PER_LINE];
@@ -21,7 +23,7 @@ public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
 
     @Override
     public void init() {
-        graphics = parent.createGraphics(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+        graphics = parent.createGraphics(DISPLAY_WIDTH, DISPLAY_HEIGHT, PConstants.JAVA2D);
     }
 
     @Override
@@ -33,8 +35,8 @@ public class PGraphicsBuffer implements PushImageBuffer, PushConstants {
     @Override
     public byte[] getChunk(int index) {
         return Arrays.copyOfRange(maskedChunk,
-                LINES_PER_TRANSFER * index,
-                LINES_PER_TRANSFER * (index + 1));
+                CHUNK_SIZE * index,
+                CHUNK_SIZE * (index + 1));
     }
 
     @Override

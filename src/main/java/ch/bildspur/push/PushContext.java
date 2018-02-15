@@ -19,11 +19,7 @@ public class PushContext implements PushConstants, PConstants {
 
     public PushContext() {
         // add event listeners
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                close();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
     private void initLibUsb() {
@@ -147,11 +143,17 @@ public class PushContext implements PushConstants, PConstants {
     }
 
     public void open() {
+        if(isOpen())
+            return;
+
         initLibUsb();
         startEventThread();
     }
 
     public void close() {
+        if(!isOpen())
+            return;
+
         stopEventThread();
         exitLibUsb();
     }
