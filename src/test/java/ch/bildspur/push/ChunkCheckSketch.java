@@ -8,6 +8,9 @@ import processing.core.PImage;
 
 import java.awt.*;
 
+import static ch.bildspur.push.PushConstants.DISPLAY_WIDTH;
+import static ch.bildspur.push.PushConstants.LINES_PER_TRANSFER;
+
 public class ChunkCheckSketch extends PApplet {
     public static void main(String... args) {
         ChunkCheckSketch sketch = new ChunkCheckSketch();
@@ -57,7 +60,7 @@ public class ChunkCheckSketch extends PApplet {
         pushGraphics.endDraw();
 
         bufferedGraphics.setPaint(new Color(red, green, blue));
-        bufferedGraphics.fillRect(0, 0, PushConstants.DISPLAY_WIDTH, PushConstants.DISPLAY_HEIGHT);
+        bufferedGraphics.fillRect(0, 0, DISPLAY_WIDTH, PushConstants.DISPLAY_HEIGHT);
 
         // prepare buffers
         pGraphicsBuffer.prepareChunk();
@@ -67,8 +70,12 @@ public class ChunkCheckSketch extends PApplet {
         byte[] graphicsChunk = pGraphicsBuffer.getChunk(0);
         byte[] bufferedChunk = bufferedImageBuffer.getChunk(0);
 
-        short[] bufferedRaw = bufferedImageBuffer.getRaw();
-        int[] pgraphicsRaw = pGraphicsBuffer.getRaw();
+        // load raw pixels
+        short[] bufferedRaw = new short[LINES_PER_TRANSFER * DISPLAY_WIDTH];
+        bufferedImageBuffer.getScreen().getRaster().getDataElements(0, 0, DISPLAY_WIDTH, LINES_PER_TRANSFER, bufferedRaw);
+
+        pGraphicsBuffer.getGraphics().loadPixels();
+        int[] pgraphicsRaw = pGraphicsBuffer.getGraphics().pixels;
 
         // get red part
         IntColor graphicsPixel = new IntColor(

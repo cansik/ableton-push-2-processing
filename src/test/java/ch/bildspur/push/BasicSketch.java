@@ -21,7 +21,7 @@ public class BasicSketch extends PApplet {
     PushDevice push;
     BufferedImageBuffer screenBuffer;
 
-    Graphics pushGraphics;
+    Graphics2D pushGraphics;
 
     @Override
     public void settings()
@@ -51,7 +51,9 @@ public class BasicSketch extends PApplet {
     public void draw() {
         background(100, 200, 50);
 
-        pushGraphics.clearRect(0, 0, PushConstants.DISPLAY_WIDTH, PushConstants.DISPLAY_HEIGHT);
+        pushGraphics.setPaint(new Color(255, 0, 0));
+        pushGraphics.fillRect(0, 0, PushConstants.DISPLAY_WIDTH, PushConstants.DISPLAY_HEIGHT);
+        pushGraphics.setPaint(new Color(255, 255, 255));
         pushGraphics.drawString("Framecount: " + frameCount, 100, 100);
 
         push.sendFrameAsync();
