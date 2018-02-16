@@ -1,10 +1,8 @@
 package ch.bildspur.push;
 
 import org.usb4java.*;
-import processing.core.PApplet;
 import processing.core.PConstants;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
