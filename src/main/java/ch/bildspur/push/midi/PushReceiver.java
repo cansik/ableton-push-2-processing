@@ -11,12 +11,9 @@ public class PushReceiver implements Receiver {
         if(message instanceof ShortMessage)
         {
             ShortMessage msg = (ShortMessage)message;
-            System.out.println("Midi => Channel: "
-                    + msg.getChannel()
-                    + " Command: "
-                    + msg.getCommand()
-                    + " Data1: "
-                    + msg.getData1()
+            System.out.println("Midi => Channel: " + msg.getChannel()
+                    + " Command: " + msg.getCommand()
+                    + " Data1: " + msg.getData1()
                     + " Data2: " + msg.getData2());
         }
     }
